@@ -2,10 +2,10 @@ const APP_CONFIG = {
     ROOM_PREFIX: 'ph-random-chat-',
     TYPING_TIMEOUT: 2000,
     CONNECTION_TIMEOUT: 15000,
-    QUICK_CONNECT_TIMEOUT: 400,
-    RETRY_DELAY: 200,
-    WAITING_ROOM_TIMEOUT: 800,
-    RECONNECT_INITIAL_DELAY: 1000,
+    QUICK_CONNECT_TIMEOUT: 150,  // Reduced from 400ms to 150ms for faster attempts
+    RETRY_DELAY: 50,              // Reduced from 200ms to 50ms for quicker retries
+    WAITING_ROOM_TIMEOUT: 300,    // Reduced from 800ms to 300ms for faster rotation
+    RECONNECT_INITIAL_DELAY: 500, // Reduced from 1000ms to 500ms
     RECONNECT_MAX_DELAY: 30000,
     RECONNECT_MULTIPLIER: 1.5,
     MAX_RECONNECT_ATTEMPTS: 10
@@ -165,8 +165,7 @@ class RandomChatApp {
             const peerId = this.generatePeerId();
             this.myPeerId = peerId;
             
-            // Use PeerJS cloud service (reliable and free)
-            // Note: For production, consider your own PeerServer for better control
+            // Use PeerJS cloud server with optimized settings for faster connections
             this.peer = new Peer(peerId, {
                 config: {
                     iceServers: [
@@ -208,7 +207,12 @@ class RandomChatApp {
                     rtcpMuxPolicy: 'require'
                 },
                 debug: 1,
-                pingInterval: 5000
+                pingInterval: 2000,  // Reduced from 3000ms to 2000ms for faster detection
+                // Use fastest available PeerJS cloud server
+                host: '0.peerjs.com',
+                port: 443,
+                path: '/',
+                secure: true
             });
 
             this.peer.on('open', (id) => {
@@ -421,7 +425,7 @@ class RandomChatApp {
         // Try connecting to a waiting room peer
         const waitingRoomId = `${APP_CONFIG.ROOM_PREFIX}waiting`;
         
-        setTimeout(() => {
+        setTimeout(() => {  // Reduced delay from 100ms to 10ms
             if (!this.peer || !this.isSearching || this.isConnected) return;
             
             // Check if peer is open and ready
@@ -535,7 +539,7 @@ class RandomChatApp {
                         }
                     });
 
-                    // Fast timeout for quick connection attempts
+                    // Ultra-fast timeout for instant connection attempts
                     timeoutHandle = setTimeout(() => {
                         if (!connectionAttempted && this.isSearching && !this.isConnected) {
                             connectionAttempted = true;
@@ -584,8 +588,8 @@ class RandomChatApp {
 
         const waitingRoomId = `${APP_CONFIG.ROOM_PREFIX}waiting`;
         
-        // Minimal delay for instant reconnection
-        const delay = needsDestroy ? 30 : 0;
+        // Ultra-minimal delay for instant reconnection
+        const delay = needsDestroy ? 10 : 0;  // Reduced from 30ms to 10ms
         
         setTimeout(() => {
             if (!this.isSearching || this.isConnected) return;
@@ -636,7 +640,7 @@ class RandomChatApp {
                 
                 console.log('Waiting peer opened with ID:', id);
                 
-                // Fast rotation for quicker matching
+                // Ultra-fast rotation for instant matching
                 this.waitingTimeout = setTimeout(() => {
                     if (this.isSearching && !this.isConnected) {
                         console.log('No one connected, switching to connector mode');
@@ -654,11 +658,11 @@ class RandomChatApp {
                                     if (this.isSearching && !this.isConnected) {
                                         this.findStranger();
                                     }
-                                }, APP_CONFIG.RETRY_DELAY);
+                                }, APP_CONFIG.RETRY_DELAY);  // Now 50ms instead of 200ms
                             }
-                        }, 50);
+                        }, 20);  // Reduced from 50ms to 20ms
                     }
-                }, APP_CONFIG.WAITING_ROOM_TIMEOUT);
+                }, APP_CONFIG.WAITING_ROOM_TIMEOUT);  // Now 300ms instead of 800ms
             });
 
             this.peer.on('connection', (conn) => {
