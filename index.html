@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PH Random Chat - Connect Anonymously</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <circle cx="16" cy="16" r="14" stroke="currentColor" stroke-width="2"/>
+                    <path d="M12 12C12 12 14 10 16 10C18 10 20 12 20 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="16" r="1.5" fill="currentColor"/>
+                    <circle cx="20" cy="16" r="1.5" fill="currentColor"/>
+                    <path d="M12 20C12 20 14 22 16 22C18 22 20 20 20 20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <h1>PH Random Chat</h1>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-secondary btn-icon" id="messageColorBtn" title="Message Color">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <circle cx="10" cy="10" r="7" stroke="currentColor" stroke-width="2"/>
+                        <circle cx="10" cy="10" r="3" fill="currentColor"/>
+                    </svg>
+                </button>
+                <button class="btn btn-secondary btn-icon" id="themeToggle" title="Change Theme">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" id="themeIcon">
+                        <circle cx="10" cy="10" r="4" stroke="currentColor" stroke-width="2"/>
+                        <path d="M10 2V4M10 16V18M18 10H16M4 10H2M15.5 4.5L14 6M6 14L4.5 15.5M15.5 15.5L14 14M6 6L4.5 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <div class="status-badge" id="statusBadge">
+                    <span class="status-dot"></span>
+                    <span id="statusText">Offline</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="welcome-screen" id="welcomeScreen">
+                <div class="welcome-card">
+                    <h2>Welcome to PH Random Chat</h2>
+                    <p>Connect anonymously with random people in the Philippines</p>
+                    <div class="features">
+                        <div class="feature">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 15V3M12 3L8 7M12 3L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M2 17L2 19C2 20.1046 2.89543 21 4 21L20 21C21.1046 21 22 20.1046 22 19V17" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>100% Anonymous</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Instant Connection</span>
+                        </div>
+                        <div class="feature">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                                <path d="M12 8V12L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                            <span>Free Forever</span>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" id="startChatBtn">
+                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                            <path d="M17 3H3C1.89543 3 1 3.89543 1 5V13C1 14.1046 1.89543 15 3 15H5V18L10 15H17C18.1046 15 19 14.1046 19 13V5C19 3.89543 18.1046 3 17 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Start Chatting
+                    </button>
+                </div>
+            </div>
+
+            <div class="chat-container" id="chatContainer" style="display: none;">
+                <div class="chat-header">
+                    <div class="stranger-info">
+                        <div class="stranger-avatar">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                                <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                                <path d="M6 21V19C6 16.7909 7.79086 15 10 15H14C16.2091 15 18 16.7909 18 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3>Stranger</h3>
+                            <p class="connection-status" id="connectionStatus">Searching...</p>
+                        </div>
+                    </div>
+                    <div class="chat-header-actions">
+                        <button class="btn btn-secondary btn-icon" id="newChatBtn" title="New Chat" style="display: none;">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M16 10C16 13.3137 13.3137 16 10 16C6.68629 16 4 13.3137 4 10C4 6.68629 6.68629 4 10 4C13.3137 4 16 6.68629 16 10Z" stroke="currentColor" stroke-width="2"/>
+                                <path d="M10 7V13M7 10H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-secondary btn-icon" id="disconnectBtn" title="Stop">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="messages" id="messagesContainer">
+                    <div class="system-message">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <circle cx="8" cy="8" r="7" stroke="currentColor" stroke-width="1.5"/>
+                            <path d="M8 4V8M8 11H8.01" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+                        </svg>
+                        <span>Looking for a stranger to chat with...</span>
+                    </div>
+                </div>
+
+                <div class="chat-input-container">
+                    <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                        <span>Stranger is typing</span>
+                        <div class="typing-dots">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </div>
+                    </div>
+                    <div class="input-wrapper">
+                        <div class="input-with-emoji">
+                            <input 
+                                type="text" 
+                                id="messageInput" 
+                                placeholder="Type your message..." 
+                                autocomplete="off"
+                                disabled
+                            >
+                            <button class="btn btn-secondary btn-icon emoji-trigger" id="emojiBtn" disabled title="Add emoji">
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                    <circle cx="10" cy="10" r="8" stroke="currentColor" stroke-width="2"/>
+                                    <circle cx="7" cy="8" r="1" fill="currentColor"/>
+                                    <circle cx="13" cy="8" r="1" fill="currentColor"/>
+                                    <path d="M6.5 12C6.5 12 7.5 14 10 14C12.5 14 13.5 12 13.5 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                            <div class="emoji-picker" id="emojiPicker" style="display: none;">
+                                <div class="emoji-picker-header">
+                                    <div class="emoji-categories">
+                                        <button class="emoji-category active" data-category="smileys">😊</button>
+                                        <button class="emoji-category" data-category="gestures">👋</button>
+                                        <button class="emoji-category" data-category="hearts">❤️</button>
+                                        <button class="emoji-category" data-category="symbols">✨</button>
+                                    </div>
+                                </div>
+                                <div class="emoji-picker-content" id="emojiPickerContent"></div>
+                            </div>
+                        </div>
+                        <button class="btn btn-secondary btn-icon" id="audioCallBtn" disabled title="Audio call">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M18 14V16C18 17.1046 17.1046 18 16 18H15C7.26801 18 1 11.732 1 4V3C1 1.89543 1.89543 1 3 1H5C5.55228 1 6 1.44772 6 2V6C6 6.55228 5.55228 7 5 7H4C4 10.866 7.13401 14 11 14V13C11 12.4477 11.4477 12 12 12H16C16.5523 12 17 12.4477 17 13V14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-secondary btn-icon" id="videoCallBtn" disabled title="Video call">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <rect x="2" y="4" width="12" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+                                <path d="M14 7L18 5V13L14 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                        <button class="btn btn-primary btn-icon" id="sendBtn" disabled>
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                                <path d="M18 2L9 11M18 2L12 18L9 11M18 2L2 8L9 11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>Stay safe online. Never share personal information.</p>
+        </footer>
+    </div>
+
+    <!-- Incoming Call Notification -->
+    <div class="incoming-call-modal" id="incomingCallModal" style="display: none;">
+        <div class="incoming-call-content">
+            <div class="incoming-call-avatar">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="24" r="12" stroke="currentColor" stroke-width="3"/>
+                    <path d="M12 52C12 41.5066 20.5066 33 32 33C43.4934 33 52 41.5066 52 52" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+            </div>
+            <h3>Incoming Call</h3>
+            <p>Stranger is calling...</p>
+            <div class="incoming-call-actions">
+                <button class="call-btn call-btn-decline" id="declineCallBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 9C3 8.44772 3.44772 8 4 8H6C6.55228 8 7 8.44772 7 9V13C7 13.5523 6.55228 14 6 14H4C2.89543 14 2 13.1046 2 12V11C2 6.58172 5.58172 3 10 3H14C18.4183 3 22 6.58172 22 11V12C22 13.1046 21.1046 14 20 14H18C17.4477 14 17 13.5523 17 13V9C17 8.44772 17.4477 8 18 8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="call-btn call-btn-accept" id="acceptCallBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 9C3 8.44772 3.44772 8 4 8H6C6.55228 8 7 8.44772 7 9V13C7 13.5523 6.55228 14 6 14H4C2.89543 14 2 13.1046 2 12V11C2 6.58172 5.58172 3 10 3H14C18.4183 3 22 6.58172 22 11V12C22 13.1046 21.1046 14 20 14H18C17.4477 14 17 13.5523 17 13V9C17 8.44772 17.4477 8 18 8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Color Picker Modal -->
+    <div class="message-color-modal" id="messageColorModal" style="display: none;">
+        <div class="message-color-content">
+            <h3>Choose Your Message Color</h3>
+            <p>Select a color for your messages</p>
+            <div class="color-picker-grid">
+                <button class="color-option" data-color="default" style="background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);" title="Default Purple"></button>
+                <button class="color-option" data-color="blue" style="background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);" title="Blue"></button>
+                <button class="color-option" data-color="green" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%);" title="Green"></button>
+                <button class="color-option" data-color="red" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);" title="Red"></button>
+                <button class="color-option" data-color="orange" style="background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);" title="Orange"></button>
+                <button class="color-option" data-color="pink" style="background: linear-gradient(135deg, #ec4899 0%, #db2777 100%);" title="Pink"></button>
+                <button class="color-option" data-color="cyan" style="background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);" title="Cyan"></button>
+                <button class="color-option" data-color="yellow" style="background: linear-gradient(135deg, #eab308 0%, #ca8a04 100%);" title="Yellow"></button>
+                <button class="color-option" data-color="indigo" style="background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);" title="Indigo"></button>
+                <button class="color-option" data-color="teal" style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);" title="Teal"></button>
+                <button class="color-option" data-color="violet" style="background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);" title="Violet"></button>
+                <button class="color-option" data-color="rose" style="background: linear-gradient(135deg, #f43f5e 0%, #e11d48 100%);" title="Rose"></button>
+            </div>
+            <button class="btn btn-secondary" id="closeColorPicker">Close</button>
+        </div>
+    </div>
+
+    <!-- Call Modal -->
+    <div class="call-modal" id="callModal" style="display: none;">
+        <div class="call-content">
+            <div class="call-header">
+                <h3 id="callTitle">Voice Call</h3>
+                <span id="callDuration">00:00</span>
+            </div>
+            
+            <div class="video-container" id="videoContainer" style="display: none;">
+                <video id="remoteVideo" autoplay playsinline></video>
+                <video id="localVideo" autoplay playsinline muted></video>
+            </div>
+
+            <div class="call-avatar" id="callAvatar">
+                <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
+                    <circle cx="32" cy="24" r="12" stroke="currentColor" stroke-width="3"/>
+                    <path d="M12 52C12 41.5066 20.5066 33 32 33C43.4934 33 52 41.5066 52 52" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                </svg>
+                <p>Stranger</p>
+            </div>
+
+            <div class="call-status" id="callStatus">Calling...</div>
+
+            <div class="call-controls">
+                <button class="call-btn" id="toggleMuteBtn" title="Mute">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect x="10" y="3" width="4" height="10" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M7 11C7 13.7614 9.23858 16 12 16C14.7614 16 17 13.7614 17 11M12 16V20M9 20H15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+                <button class="call-btn" id="toggleVideoBtn" title="Toggle Video" style="display: none;">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <rect x="3" y="6" width="14" height="12" rx="2" stroke="currentColor" stroke-width="2"/>
+                        <path d="M17 10L21 8V16L17 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+                <button class="call-btn call-btn-end" id="endCallBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                        <path d="M3 9C3 8.44772 3.44772 8 4 8H6C6.55228 8 7 8.44772 7 9V13C7 13.5523 6.55228 14 6 14H4C2.89543 14 2 13.1046 2 12V11C2 6.58172 5.58172 3 10 3H14C18.4183 3 22 6.58172 22 11V12C22 13.1046 21.1046 14 20 14H18C17.4477 14 17 13.5523 17 13V9C17 8.44772 17.4477 8 18 8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

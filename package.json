@@ -1,0 +1,16 @@
+{
+  "name": "ph-random-chat",
+  "version": "1.0.0",
+  "description": "Anonymous random chat application for Philippines",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}
