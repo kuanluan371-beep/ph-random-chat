@@ -165,17 +165,9 @@ class RandomChatApp {
             const peerId = this.generatePeerId();
             this.myPeerId = peerId;
             
-            // Configuration for signaling server using free PeerJS server
-            // For production, consider using your own PeerJS server or Supabase Realtime
-            const peerConfig = {
-                host: '0.peerjs.com',
-                port: 443,
-                path: '/peerjs',
-                secure: true,
-            };
-            
+            // Use PeerJS cloud service (reliable and free)
+            // Note: For production, consider your own PeerServer for better control
             this.peer = new Peer(peerId, {
-                ...peerConfig,
                 config: {
                     iceServers: [
                         // Multiple STUN servers for NAT traversal
@@ -600,10 +592,6 @@ class RandomChatApp {
         
         try {
             this.peer = new Peer(waitingRoomId, {
-                host: '0.peerjs.com',
-                port: 443,
-                path: '/peerjs',
-                secure: true,
                 config: {
                     iceServers: [
                         { urls: 'stun:stun.l.google.com:19302' },
