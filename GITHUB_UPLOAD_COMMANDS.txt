@@ -1,0 +1,22 @@
+# AFTER creating your GitHub repository, run these commands:
+
+# 1. Add GitHub as remote (replace YOUR_USERNAME with your GitHub username)
+git remote add origin https://github.com/YOUR_USERNAME/ph-random-chat.git
+
+# 2. Verify remote was added
+git remote -v
+
+# 3. Push your code to GitHub
+git push -u origin main
+
+# If you get authentication error, GitHub will prompt you to login
+# Or you can use GitHub Desktop for easier authentication
+
+
+# === ALTERNATIVE: Use GitHub Desktop (Easier) ===
+# 1. Download GitHub Desktop: https://desktop.github.com/
+# 2. Install and sign in
+# 3. File → Add Local Repository
+# 4. Select: C:\Users\Marky\Downloads\RANDOMCHAT
+# 5. Click "Publish repository" button
+# Done!
